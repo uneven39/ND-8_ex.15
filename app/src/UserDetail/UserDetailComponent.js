@@ -8,32 +8,36 @@ userApp.component('userDetail', {
 	
 	controller: function UserDetailCtrl($routeParams, UsersService) {
 
-		this.userLoaded = false;
 		var vm = this;
 
-		vm.user = UsersService.get({
-			userId: $routeParams['userId']
-		}, function(successResult) {
-			// Окей!
-			vm.notfoundError = false;
-			vm.userLoaded = true;
+		vm.$onInit = function() {
+			vm.userLoaded = false;
 
-			vm.activeTab = 1;
-			vm.disableControlTab = true;
-		}, function(errorResult) {
-			// Не окей..
-			vm.notfoundError = true;
-			vm.userLoaded = true;
+			vm.user = UsersService.get({
+				userId: $routeParams['userId']
+			}, function(successResult) {
+				// Окей!
+				vm.notfoundError = false;
+				vm.userLoaded = true;
+
+				vm.activeTab = 0;
+				vm.disableControlTab = false;
+
+				console.log(vm.user);
+			}, function(errorResult) {
+				// Не окей..
+				vm.notfoundError = true;
+				vm.userLoaded = true;
+			});
+
+			vm.user.$promise.then(function(result) {
+				//vm.userLoaded = true;
+			});
+
+		};
 
 
-		});
-
-		this.user.$promise.then(function(result) {
-			//vm.userLoaded = true;
-		});
-
-		this.deleteUser = function(userId) {
-
+		vm.deleteUser = function(userId) {
 			vm.user.$delete({
 				userId: userId
 			}, function(successResult) {
@@ -43,7 +47,6 @@ userApp.component('userDetail', {
 				// Не окей..
 				vm.deletionError = true;
 			});
-
 		}
 
 	},
